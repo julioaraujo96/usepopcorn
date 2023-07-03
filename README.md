@@ -1,6 +1,6 @@
 # 🍿 usepopcorn 🍿
 
-This project was created with vite. The goal here is to recap React most important features and overall practice. More advanced projects incoming later on.
+This project was created with vite. The goal here is to recap React most important features and overall practice. 
 
 - hooks
 - state management
