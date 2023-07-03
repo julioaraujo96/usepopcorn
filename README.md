@@ -13,3 +13,5 @@ If you want to fork and play around with the project:
 - npm install to install de the dependencies
 - npm run dev  to start dev mode
 - npm run build to make a production build
+
+  Note: the starter files come from a Udemy course with Jonas Schmedtman about React.
