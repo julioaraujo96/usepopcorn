@@ -25,6 +25,9 @@ To make the API calls work:
 
 `
 VITE_API_URL = 'http://omdbapi.com/'
+`
+<br>
+`
 VITE_API_KEY = 'YOUR_API_KEY'
 `
 
