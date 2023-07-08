@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react';
+import { NavBar } from './components/NavBar';
+import { Search } from './components/Search';
+import { ErrorMessage } from './components/ErrorMessage';
+import { NumResults } from './components/NumResults';
+import { MainContainer } from './components/MainContainer';
+import { Loader } from './components/Loader';
+import { Box } from './components/Box';
+import { MovieList } from './components/MovieList';
+import { MovieDetails } from './components/MovieDetails';
+import { WatchedSummary } from './components/WatchedSummary';
+import { WatchedMoviesList } from './components/WatchedMoviesList';
 
-const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-const KEY = '4d0b307e';
 
 export default function App() {
   const [movies, setMovies] = useState([]);
@@ -11,19 +19,30 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
 
   function handleSetQuery(query) {
     setQuery(query);
   }
 
+  function handleSelectMovie(id) {
+    setSelectedId( prevId => prevId === id ? null : id);
+  }
+
+  function handleCloseMovie() {
+    setSelectedId(null);
+  }
+
+  function handleAddWatched(movie) {
+    setWatched( watched  => [...watched, movie])
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setError("");
+        setError('');
         setLoading(true);
-        const response = await fetch(
-          `http://omdbapi.com/?apikey=${KEY}&s=${query}`
-        );
+        const response = await fetch(`${import.meta.env.VITE_API_URL}?apikey=${import.meta.env.VITE_API_KEY}&s=${query}`);
 
         if (!response.ok) {
           throw new Error('Something went wrong while fetching movies.');
@@ -35,7 +54,7 @@ export default function App() {
           throw new Error('Movie not found');
         }
         setMovies(data.Search);
-        setError("");
+        setError('');
       } catch (error) {
         setError(error.message);
       } finally {
@@ -45,7 +64,7 @@ export default function App() {
 
     if (query.length < 3) {
       setMovies([]);
-      setError("");
+      setError('');
       return;
     }
 
@@ -59,175 +78,31 @@ export default function App() {
         <NumResults movies={movies} />
       </NavBar>
 
-      <Main>
+      <MainContainer>
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
 
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
         </Box>
-      </Main>
+      </MainContainer>
     </>
   );
 }
 
-function NavBar({ children }) {
-  return (
-    <nav className='nav-bar'>
-      <Logo />
-      {children}
-    </nav>
-  );
-}
 
-function Logo() {
-  return (
-    <div className='logo'>
-      <span role='img'>🍿</span>
-      <h1>usePopcorn</h1>
-    </div>
-  );
-}
-
-function Loader() {
-  return <p className='loader'>Loading...</p>;
-}
-
-function ErrorMessage({ message }) {
-  return (
-    <p className='error'>
-      <span>🛑</span>
-      {message}
-    </p>
-  );
-}
-
-function Search({ query, onQuery }) {
-  return (
-    <input
-      className='search'
-      type='text'
-      placeholder='Search movies...'
-      value={query}
-      onChange={(e) => onQuery(e.target.value)}
-    />
-  );
-}
-
-function NumResults({ movies }) {
-  return (
-    <p className='num-results'>
-      Found <strong>{movies?.length}</strong> results
-    </p>
-  );
-}
-
-function Main({ children }) {
-  return <main className='main'>{children}</main>;
-}
-
-function Box({ children }) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  return (
-    <div className='box'>
-      <button className='btn-toggle' onClick={() => setIsOpen((open) => !open)}>
-        {isOpen ? '–' : '+'}
-      </button>
-
-      {isOpen && children}
-    </div>
-  );
-}
-
-function MovieList({ movies }) {
-  return (
-    <ul className="list">
-      {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
-      ))}
-    </ul>
-  );
-}
-
-function Movie({ movie }) {
-  return (
-    <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>
-          <span>🗓</span>
-          <span>{movie.Year}</span>
-        </p>
-      </div>
-    </li>
-  );
-}
-
-function WatchedSummary({ watched }) {
-  const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
-  const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
-
-  return (
-    <div className='summary'>
-      <h2>Movies you watched</h2>
-      <div>
-        <p>
-          <span>#️⃣</span>
-          <span>{watched.length} movies</span>
-        </p>
-        <p>
-          <span>⭐️</span>
-          <span>{avgImdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{avgUserRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{avgRuntime} min</span>
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function WatchedMoviesList({ watched }) {
-  return (
-    <ul className='list'>
-      {watched.map((movie) => (
-        <WatchedMovie movie={movie} key={movie.imdbID} />
-      ))}
-    </ul>
-  );
-}
-
-function WatchedMovie({ movie }) {
-  return (
-    <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
-      <div>
-        <p>
-          <span>⭐️</span>
-          <span>{movie.imdbRating}</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>{movie.userRating}</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>{movie.runtime} min</span>
-        </p>
-      </div>
-    </li>
-  );
-}
