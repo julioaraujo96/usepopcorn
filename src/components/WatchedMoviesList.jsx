@@ -1,10 +1,16 @@
 import { WatchedMovie } from './WatchedMovie';
+import PropTypes from 'prop-types';
 
-export function WatchedMoviesList({ watched }) {
+WatchedMoviesList.propTypes = {
+  watched: PropTypes.array,
+  onDeleteWatched: PropTypes.func,
+}
+
+export function WatchedMoviesList({ watched, onDeleteWatched }) {
   return (
     <ul className='list'>
       {watched.map((movie) => (
-        <WatchedMovie movie={movie} key={movie.imdbID} />
+        <WatchedMovie movie={movie} key={movie.imdbID} onDeleteWatched={onDeleteWatched} />
       ))}
     </ul>
   );
