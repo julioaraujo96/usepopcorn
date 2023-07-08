@@ -10,12 +10,13 @@ import { MovieList } from './components/MovieList';
 import { MovieDetails } from './components/MovieDetails';
 import { WatchedSummary } from './components/WatchedSummary';
 import { WatchedMoviesList } from './components/WatchedMoviesList';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useLocalStorage([]);
   const [query, setQuery] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,7 +41,7 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched(watched => watched.filter(item => item.imdbID !== id));
   }
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
