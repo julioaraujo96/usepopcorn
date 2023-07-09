@@ -78,6 +78,7 @@ export default function App() {
       return;
     }
 
+    handleCloseMovie();
     fetchData();
 
     return function(){
