@@ -55,6 +55,16 @@ export function MovieDetails({
     onCloseMovie();
   }
 
+  useEffect(()=>{
+    document.addEventListener('keydown', (e) =>{
+      if(e.code === 'Escape'){
+        onCloseMovie();
+      }
+    })
+
+    return document.removeEventListener('keydown');
+}, [onCloseMovie]);
+
   useEffect(() => {
     const getMovieDetails = async () => {
       setError('');
@@ -85,6 +95,10 @@ export function MovieDetails({
   useEffect(()=>{
     if(!title) return;
     document.title = `Movie | ${title}`;
+
+    return function (){
+      document.title = "usePopcorn";
+    }
   }, [title])
 
   return (

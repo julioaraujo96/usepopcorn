@@ -43,11 +43,14 @@ export default function App() {
   }
 
   useEffect(() => {
+
+    const controller = new AbortController();
+
     const fetchData = async () => {
       try {
         setError('');
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_URL}?apikey=${import.meta.env.VITE_API_KEY}&s=${query}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}?apikey=${import.meta.env.VITE_API_KEY}&s=${query}`, {signal: controller.signal});
 
         if (!response.ok) {
           throw new Error('Something went wrong while fetching movies.');
@@ -61,7 +64,9 @@ export default function App() {
         setMovies(data.Search);
         setError('');
       } catch (error) {
-        setError(error.message);
+        if(error.name !== 'AbortError') {
+          setError(error.message);
+        }
       } finally {
         setLoading(false);
       }
@@ -74,6 +79,10 @@ export default function App() {
     }
 
     fetchData();
+
+    return function(){
+      controller.abort();
+    }
   }, [query]);
 
   return (
