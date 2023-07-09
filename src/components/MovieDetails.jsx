@@ -62,7 +62,7 @@ export function MovieDetails({
           onCloseMovie();
         }
     }
-    document.addEventListener('keydown', callback)
+    document.addEventListener('keydown', callback);
 
     return document.removeEventListener('keydown', callback );
 }, [onCloseMovie]);
