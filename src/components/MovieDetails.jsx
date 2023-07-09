@@ -56,13 +56,15 @@ export function MovieDetails({
   }
 
   useEffect(()=>{
-    document.addEventListener('keydown', (e) =>{
-      if(e.code === 'Escape'){
-        onCloseMovie();
-      }
-    })
 
-    return document.removeEventListener('keydown');
+    function callback(e){
+        if(e.code === 'Escape'){
+          onCloseMovie();
+        }
+    }
+    document.addEventListener('keydown', callback)
+
+    return document.removeEventListener('keydown', callback );
 }, [onCloseMovie]);
 
   useEffect(() => {
