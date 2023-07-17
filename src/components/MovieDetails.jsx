@@ -3,6 +3,7 @@ import StarRating from './StarRating';
 import { ErrorMessage } from './ErrorMessage';
 import { Loader } from './Loader';
 import PropTypes from 'prop-types';
+import { useKey } from '../hooks/useKey';
 
 MovieDetails.propTypes = {
   selectedId: PropTypes.string,
@@ -55,17 +56,7 @@ export function MovieDetails({
     onCloseMovie();
   }
 
-  useEffect(()=>{
-
-    function callback(e){
-        if(e.code === 'Escape'){
-          onCloseMovie();
-        }
-    }
-    document.addEventListener('keydown', callback);
-
-    return document.removeEventListener('keydown', callback );
-}, [onCloseMovie]);
+  useKey("Escape", onCloseMovie);
 
   useEffect(() => {
     const getMovieDetails = async () => {

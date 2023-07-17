@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
+import { useKey } from '../hooks/useKey';
 
 export function Search({ query, onQuery }) {
 
@@ -8,6 +9,13 @@ export function Search({ query, onQuery }) {
   useEffect(() => {
       searchRef.current.focus();
   }, [])
+
+  useKey('Enter', function(){
+    if(document.activeElement === searchRef.current) return;
+
+    searchRef.current.focus();
+    onQuery('');
+  })
 
   return (
     <input
